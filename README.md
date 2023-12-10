@@ -40,5 +40,63 @@ Pour utiliser Spring AOP, nous devons ajouter les dépendances suivantes à notr
     </dependency>
 </dependencies>
 ```
+On va créer une clsse MetierImpl qui implémente l'interface IMetier :<br>
+```java
+@Service
+public class MetierImpl implements IMetier {
+    @Override
+    public void process() {
+        System.out.println("Business process...");
+    }
 
+    @Override
+    public double compute() {
+        double data = Math.random();
+        System.out.println("Business computing and returning");
+        return data;
+    }
+}
+```
+### Exécution de l'application
+```java
+@ComponentScan(value = {"ma.enset.services", "ma.enset.aspects"})
+public class Application {
+    public static void main(String[] args) {
+        ApplicationContext applicationContext
+                = new AnnotationConfigApplicationContext(Application.class);
+
+        IMetier metier = applicationContext.getBean(IMetier.class);
+        System.out.println(metier.getClass().getName());
+        metier.process();
+        System.out.println("data = " + metier.compute());
+    }
+}
+```
+
+![img_2.png](img_2.png)
+
+### Création d'un LogAspect
+```java
+
+@Component
+@Aspect
+@EnableAspectJAutoProxy
+public class LogAspect {
+    @Before("execution(public void process())")
+    public void log() {
+        System.out.println("From LogAspect: Log before process() ...");
+    }
+}
+```
+Dans cet aspect on ajoute les annotations suivantes :<br>
+- @Component : pour que Spring puisse détecter cet aspect et le gérer comme un bean Spring.
+- @Aspect : pour indiquer à Spring que c'est un aspect.
+- @EnableAspectJAutoProxy : pour activer l'auto-proxying basé sur les annotations.
+
+
+### Exécution de l'application
+
+![img_3.png](img_3.png)
+
+On constate que le nom de la classe de l'objet métier a changé, c'est parce que Spring a créé un proxy pour l'objet métier et a ajouté le code de l'aspect à ce proxy.
 
