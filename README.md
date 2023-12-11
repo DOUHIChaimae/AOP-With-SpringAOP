@@ -1,4 +1,4 @@
-## Programmation Orientée Aspect (AOP) avec Spring AOP
+## Programmation Orientée Aspect (AOP) avec Spring AOP 📄
 
 ### 1. Introduction
 La Programmation Orientée Aspect (AOP) complète la Programmation Orientée Objet (OOP) en fournissant une autre manière de penser à la structure d'un programme. L'unité clé de modularité en OOP est la classe, tandis qu'en AOP, l'unité de modularité est l'aspect. Les aspects permettent la modularisation des préoccupations (telles que la gestion des transactions) qui traversent plusieurs types et objets. (Ces préoccupations sont souvent appelées préoccupations transversales dans la littérature sur l'AOP.)<br>
@@ -8,7 +8,7 @@ La Programmation Orientée Aspect (AOP) complète la Programmation Orientée Obj
 Dans cette activité nous allons travailler sur l'applicattion suivante :<br>
 ![img_1.png](img_1.png)
 
-### Ajout des dépendances nécessaires
+### 2. Ajout des dépendances nécessaires
 Pour utiliser Spring AOP, nous devons ajouter les dépendances suivantes à notre fichier pom.xml :<br>
 ```xml
 
@@ -57,7 +57,7 @@ public class MetierImpl implements IMetier {
     }
 }
 ```
-### Exécution de l'application
+#### Exécution de l'application
 ```java
 @ComponentScan(value = {"ma.enset.services", "ma.enset.aspects"})
 public class Application {
@@ -75,7 +75,7 @@ public class Application {
 
 ![img_2.png](img_2.png)
 
-### Création d'un LogAspect
+### 3. Création d'un LogAspect
 ```java
 
 @Component
@@ -102,12 +102,12 @@ public class LogAspect {
 }
 ```
 Dans cet aspect on ajoute les annotations suivantes :<br>
-- @Component : pour que Spring puisse détecter cet aspect et le gérer comme un bean Spring.
-- @Aspect : pour indiquer à Spring que c'est un aspect.
-- @EnableAspectJAutoProxy : pour activer l'auto-proxying basé sur les annotations.
+- **@Component** : pour que Spring puisse détecter cet aspect et le gérer comme un bean Spring.
+- **@Aspect** : pour indiquer à Spring que c'est un aspect.
+- **@EnableAspectJAutoProxy** : pour activer l'auto-proxying basé sur les annotations.
 
 
-### Exécution de l'application
+#### Exécution de l'application
 
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)
@@ -117,7 +117,7 @@ On constate que le nom de la classe de l'objet métier a changé, c'est parce qu
 Ce proxy est généré dynamiquement par Spring AOP et il est de type CGLIB proxy.
 
 
-#### @Log
+### 4. @Log
 Maintenant, on va créer une annotation @Log qui va nous permettre de logger les méthodes annotées par cette annotation.<br>
 ```java
 @Retention(RetentionPolicy.RUNTIME)
@@ -136,7 +136,8 @@ public class MetierImpl implements IMetier {
     }
 }
 ```
-On va créer un aspect SecuredByAspect:<br>
+#### 5. Création d'un aspect  de sécurité
+On va créer une annotation ***SecuredByAspect***:<br>
 ```java
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -144,10 +145,6 @@ public @interface SecuredByAspect {
     String[] roles();
 }
 ```
-On va ajouter une classe qui va prendre en charge l'aspect SecuredByAspect :<br>
-```java
-```
-
 On va ajouter une classe utilitaire qui va nous permettre de vérifier si l'utilisateur connecté a le droit d'accéder à la méthode annotée par @SecuredByAspect :<br>
 ```java
 public class SecurityContext {
@@ -175,6 +172,7 @@ public class SecurityContext {
     }
 }
 ```
+On va ajouter une classe qui va prendre en charge l'aspect SecuredByAspect :<br>
 On va ajouter l'aspect AuthorisationAspect :<br>
 ```java
 @Component
@@ -203,7 +201,7 @@ public class AuthorisationAspect {
 
 ```
 
-### Exécution de l'application
+#### Exécution de l'application
 On va ajouter l'annotation @SecuredByAspect à la méthode compute() en donnant le role ADMIN et on tente d'exécuter l'application en tant que USER.<br>
 ```java
 @Override
@@ -217,6 +215,7 @@ On va ajouter l'annotation @SecuredByAspect à la méthode compute() en donnant 
 On aura une exception montrant que l'utilisateur n'est pas authorisé à accéder à la méthode compute() :<br>
 ![img_5.png](img_5.png)
 
+## Conclusion 🎉
+Dans cette activité on a vu comment utiliser Spring AOP pour ajouter des fonctionnalités transversales à notre application. On a vu comment créer des aspects et comment les appliquer à des méthodes en utilisant des annotations. On a aussi vu comment utiliser des annotations personnalisées pour ajouter des fonctionnalités transversales à notre application.
 
 
-```java
