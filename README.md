@@ -86,6 +86,19 @@ public class LogAspect {
     public void log() {
         System.out.println("From LogAspect: Log before process() ...");
     }
+
+    @Around("execution(* ma.enset.services..*(..))")
+
+    public Object log(ProceedingJoinPoint proceedingJointPoint) throws Throwable {
+        long t1 = System.currentTimeMillis();
+        logger.info("From LogAspect: Log before process() ..." + proceedingJointPoint.getSignature());
+        Object result = proceedingJointPoint.proceed();
+        logger.info("From LogAspect: Log before process() ..." + proceedingJointPoint.getSignature());
+        long t2 = System.currentTimeMillis();
+        logger.info("From LogAspect: Log after process() ..." + proceedingJointPoint.getSignature());
+        logger.info("Duration:" + (t2 - t1));
+        return result;
+    }
 }
 ```
 Dans cet aspect on ajoute les annotations suivantes :<br>
@@ -97,6 +110,113 @@ Dans cet aspect on ajoute les annotations suivantes :<br>
 ### Exécution de l'application
 
 ![img_3.png](img_3.png)
+![img_4.png](img_4.png)
 
 On constate que le nom de la classe de l'objet métier a changé, c'est parce que Spring a créé un proxy pour l'objet métier et a ajouté le code de l'aspect à ce proxy.
 
+Ce proxy est généré dynamiquement par Spring AOP et il est de type CGLIB proxy.
+
+
+#### @Log
+Maintenant, on va créer une annotation @Log qui va nous permettre de logger les méthodes annotées par cette annotation.<br>
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Log {
+}
+```
+On va l'ajouter à la méthode process() :<br>
+```java
+@Service
+public class MetierImpl implements IMetier {
+    @Override
+    @Log
+    public void process() {
+        System.out.println("Business process...");
+    }
+}
+```
+On va créer un aspect SecuredByAspect:<br>
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SecuredByAspect {
+    String[] roles();
+}
+```
+On va ajouter une classe qui va prendre en charge l'aspect SecuredByAspect :<br>
+```java
+```
+
+On va ajouter une classe utilitaire qui va nous permettre de vérifier si l'utilisateur connecté a le droit d'accéder à la méthode annotée par @SecuredByAspect :<br>
+```java
+public class SecurityContext {
+    private static String username = "";
+    private static String password = "";
+    private static String[] roles = {};
+
+    public static void authenticate(String u, String p, String[] r) {
+        if (username == null || password == null || roles == null)
+            throw new RuntimeException("Invalid username or password or roles");
+
+        else if (username.equals("root") && password.equals("1234")) {
+            username = u;
+            password = p;
+            roles = r;
+        } else throw new RuntimeException("Invalid username or password or roles");
+
+    }
+
+    public static boolean hasRole(String role) {
+        for (String r : roles) {
+            if (r.equals(role)) return true;
+        }
+        return false;
+    }
+}
+```
+On va ajouter l'aspect AuthorisationAspect :<br>
+```java
+@Component
+@Aspect
+@EnableAspectJAutoProxy
+public class AuthorisationAspect {
+    @Around(value = "@annotation(securedByAspect)", argNames = "proceedingJointPoint,securedByAspect")
+    public Object secure(ProceedingJoinPoint proceedingJointPoint, SecuredByAspect securedByAspect) throws Throwable {
+        String[] roles = securedByAspect.roles();
+        boolean authorized = false;
+        System.out.println("From AuthorisationAspect: Authorisation before process() ...");
+        for (String role : roles) {
+            if (SecurityContext.hasRole(role)) {
+                authorized = true;
+                break;
+            }
+
+        }
+        if (authorized) {
+            Object result = proceedingJointPoint.proceed();
+            return result;
+        }
+        throw new RuntimeException("Not authorized");
+    }
+}
+
+```
+
+### Exécution de l'application
+On va ajouter l'annotation @SecuredByAspect à la méthode compute() en donnant le role ADMIN et on tente d'exécuter l'application en tant que USER.<br>
+```java
+@Override
+    @SecuredByAspect(roles = {"ADMIN"})
+    public double compute() {
+        double data = Math.random();
+        System.out.println("Business computing and returning");
+        return data;
+    }
+```
+On aura une exception montrant que l'utilisateur n'est pas authorisé à accéder à la méthode compute() :<br>
+![img_5.png](img_5.png)
+
+
+
+```java

@@ -12,14 +12,9 @@ import java.util.logging.Logger;
 @Component
 @Aspect
 @EnableAspectJAutoProxy
-public class LogAspect {
-    Logger logger = Logger.getLogger(LogAspect.class.getName());
-    @Before("execution(* ma.enset.services..*(..))")
-    public void log() {
-        System.out.println("From LogAspect: Log before process() ...");
-    }
-
-    @Around("execution(* ma.enset.services..*(..))")
+public class LogAspectWithAnnotation {
+    Logger logger = Logger.getLogger(LogAspectWithAnnotation.class.getName());
+    @Around("@annotation(ma.enset.aspects.Log)")
 
     public Object log(ProceedingJoinPoint proceedingJointPoint) throws Throwable {
         long t1 = System.currentTimeMillis();
