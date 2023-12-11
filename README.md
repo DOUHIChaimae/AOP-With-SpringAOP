@@ -117,7 +117,7 @@ On constate que le nom de la classe de l'objet métier a changé, c'est parce qu
 Ce proxy est généré dynamiquement par Spring AOP et il est de type CGLIB proxy.
 
 
-### 4. @Log
+### 4. Création d'une annotation personnalisée @Log
 Maintenant, on va créer une annotation @Log qui va nous permettre de logger les méthodes annotées par cette annotation.<br>
 ```java
 @Retention(RetentionPolicy.RUNTIME)
@@ -136,7 +136,7 @@ public class MetierImpl implements IMetier {
     }
 }
 ```
-#### 5. Création d'un aspect  de sécurité
+#### 5. Création d'un aspect  pour la sécurité
 On va créer une annotation ***SecuredByAspect***:<br>
 ```java
 @Retention(RetentionPolicy.RUNTIME)
