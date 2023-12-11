@@ -6,7 +6,7 @@ La Programmation Orientée Aspect (AOP) complète la Programmation Orientée Obj
 ***Spring AOP*** utilise soit des proxies dynamiques JDK, soit CGLIB pour créer le proxy d'un objet cible donné. Pour utiliser les proxies JDK, nous avons besoin d'au moins une interface, tandis qu'avec CGLIB, nous avons besoin d'une seule classe non final.<br>
 
 Dans cette activité nous allons travailler sur l'applicattion suivante :<br>
-![img_1.png](img_1.png)
+![img_1.png](src/main/java/ma/enset/captures/img_1.png)
 
 ### 2. Ajout des dépendances nécessaires
 Pour utiliser Spring AOP, nous devons ajouter les dépendances suivantes à notre fichier pom.xml :<br>
@@ -73,7 +73,7 @@ public class Application {
 }
 ```
 
-![img_2.png](img_2.png)
+![img_2.png](src/main/java/ma/enset/captures/img_2.png)
 
 ### 3. Création d'un LogAspect
 ```java
@@ -109,8 +109,8 @@ Dans cet aspect on ajoute les annotations suivantes :<br>
 
 #### Exécution de l'application
 
-![img_3.png](img_3.png)
-![img_4.png](img_4.png)
+![img_3.png](src/main/java/ma/enset/captures/img_3.png)
+![img_4.png](src/main/java/ma/enset/captures/img_4.png)
 
 On constate que le nom de la classe de l'objet métier a changé, c'est parce que Spring a créé un proxy pour l'objet métier et a ajouté le code de l'aspect à ce proxy.
 
@@ -213,7 +213,7 @@ On va ajouter l'annotation @SecuredByAspect à la méthode compute() en donnant 
     }
 ```
 On aura une exception montrant que l'utilisateur n'est pas authorisé à accéder à la méthode compute() :<br>
-![img_5.png](img_5.png)
+![img_5.png](src/main/java/ma/enset/captures/img_5.png)
 
 ## Conclusion 🎉
 Dans cette activité on a vu comment utiliser Spring AOP pour ajouter des fonctionnalités transversales à notre application. On a vu comment créer des aspects et comment les appliquer à des méthodes en utilisant des annotations. On a aussi vu comment utiliser des annotations personnalisées pour ajouter des fonctionnalités transversales à notre application.
